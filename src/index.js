@@ -1,13 +1,16 @@
-const express = require('express');
-const React = require('react');
-const renderToString = require('react-dom/server').renderToString;
-const Home = require('./client/components/Home').default;
+// Note: we can do this because we're using webpack on all of our code, including our server.
+import express from 'express';
+import renderer from './helpers/renderer';
+
 const app = express();
+
+// Use our public client files.
+app.use(express.static('public'));
 
 
 app.get('/', (req, res) => {
-  const content = renderToString(<Home />);
-  res.send(content);
+  console.log('First, let us render the server');
+  res.send(renderer());
 });
 
 app.listen(3000, () => {
