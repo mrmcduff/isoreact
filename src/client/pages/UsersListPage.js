@@ -33,5 +33,8 @@ function mapStateToProps(state) {
 function loadData() {
   console.log('Loading some data in the load function!!!');
 }
-export { loadData };
-export default connect(mapStateToProps, { fetchUsers })(UsersList);
+
+export default {
+  component: connect(mapStateToProps, { fetchUsers })(UsersList),
+  loadData,
+}
