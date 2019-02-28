@@ -20,23 +20,30 @@ app.use('/api', proxy('http://react-ssr-api.herokuapp.com', {
 );
 // Use our public client files.
 app.use(express.static('public'));
-// app.use(
-//   "/api",
-//   proxy("http://react-ssr-api.herokuapp.com", {
-//     poxyReqOptDecorator(opts) {
-//       opts.headers["x-forwarded-host"] = "localhost:3000";
-//       return opts;
-//     }
-//   })
-// );
-
 app.get('*', (req, res) => {
   const store = createStore(req);
   // Some logic to initialize and load data into the store
-  matchRoutes(Routes, req.path).map(( { route }) => {
-    return route.loadData ? route.loadData() : null;
+  const promises = matchRoutes(Routes, req.path).map(( { route }) => {
+    return route.loadData ? route.loadData(store) : null;
+  }).map((promise) => {
+    // Wrapping the promises with another promise that always resolves
+    // We do this to get around the short-circuit functionality with
+    // Promise.all below.
+    if (promise) {
+      return new Promise((resolve, reject) => {
+        promise.then(resolve).catch(resolve);
+      });
+    }
   });
-  res.send(renderer(req, store));
+
+  Promise.all(promises).then(() => {
+    const context = {};
+    const content = renderer(req, store, context);
+    if (context.notFound) {
+      res.status(404);
+    }
+    res.send(content);
+  });
 });
 
 app.listen(3000, () => {

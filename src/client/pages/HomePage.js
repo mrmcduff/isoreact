@@ -1,19 +1,14 @@
 import React from 'react';
 
-const Home = (props) => {
-
-  const originString = props.isClient ? 'server' : 'client';
-  const divStyle = {
-    'backgroundColor' : 'orangered',
-    'color': 'white',
-  }
-  const displayString = `I\'m the EVEN BETTER home component: ${originString}`
+const Home = () => {
   return (
-    <div>
-      <div style={divStyle}>{displayString}</div>
-      <button onClick={() => {console.log('I was clicked')}}>Click me!</button>
+    <div className="center-align" style={{ marginTop: '200px' }}>
+      <h3>Welcome</h3>
+      <p>Check out these awesome features</p>
     </div>
   );
 };
 
-export default { component: Home };
+export default {
+  component: Home
+};
